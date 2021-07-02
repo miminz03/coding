@@ -1,0 +1,31 @@
+// Sitemap Html
+function get_html_sitemap( $atts ){
+
+            $return = '';
+            $args = array('public'=>1);
+ 
+// If you would like to ignore some post types just add them to the array below
+            $ignoreposttypes = array('attachment');
+
+            $post_types = get_post_types( $args, 'objects' ); 
+
+            foreach ( $post_types as $post_type ) {
+                if( !in_array($post_type->name,$ignoreposttypes)){
+                    $return .= '<h2>' . $post_type->labels->name.'</h2>';
+                    $args = array(
+                        'posts_per_page'   => 100,
+                        'post_type'        => $post_type->name,
+                        'post_status'      => 'publish'
+                    );
+                    $posts_array = get_posts( $args ); 
+                    $return .=  '<ul>';
+                    foreach($posts_array as $pst){
+                        $return .=  '<li><a href="'.get_permalink($pst->ID).'">'.$pst->post_title.'</a></li>';
+                    }
+                    $return .=  '</ul>';
+                }
+            }
+
+        return $return;
+    }
+    add_shortcode( 'htmlSitemap', 'get_html_sitemap' );
